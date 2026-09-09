@@ -421,9 +421,42 @@ td{
 
 }
 </style>
+<style>
+.language-switcher{
+    display:flex;
+    justify-content:flex-end;
+    gap:6px;
+    margin-bottom:15px
+}
+
+.language-btn{
+    border:1px solid #dbe3ea;
+    background:#fff;
+    color:#4d6985;
+    border-radius:20px;
+    padding:7px 13px;
+    cursor:pointer;
+    font-size:13px
+}
+
+.language-btn:hover,
+.language-btn.active{
+    background:#123b63;
+    color:#fff;
+    border-color:#123b63
+}
+</style>
 </head>
 
-<body>
+<body><div class="language-switcher">
+    <button id="lang-vi" class="language-btn active" onclick="setLanguage('vi')">
+        🇻🇳 Tiếng Việt
+    </button>
+    <button id="lang-en" class="language-btn" onclick="setLanguage('en')">
+        🇬🇧 English
+    </button>
+</div>
+
 
 <div class="container">
 
@@ -3945,5 +3978,87 @@ setInterval(
 })();
 </script>
 
+<script>
+const LANGUAGE_TEXT = {
+    en: {
+        "Đang kết nối":"Connecting",
+        "Đã kết nối":"Connected",
+        "Thị trường dầu thế giới":"World Oil Market",
+        "Brent, WTI và các sản phẩm năng lượng":"Brent, WTI and energy products",
+        "Sản phẩm":"Product",
+        "Giá":"Price",
+        "Thay đổi 24h":"24h Change",
+        "Đơn vị":"Unit",
+        "Nguồn":"Source",
+        "Cập nhật":"Updated",
+        "Đang tải dữ liệu...":"Loading data...",
+        "Thị trường vàng thế giới":"World Gold Market",
+        "Giá hiện tại":"Current Price",
+        "Giá vàng theo hàm lượng":"Gold Price by Purity",
+        "Giá xăng dầu Việt Nam":"Vietnam Fuel Prices",
+        "Giá bán lẻ Petrolimex":"Petrolimex Retail Prices",
+        "Vùng 1":"Region 1",
+        "Vùng 2":"Region 2",
+        "Tin tức":"News",
+        "Tất cả":"All",
+        "Xã hội":"Society",
+        "Chính trị":"Politics",
+        "Pháp luật":"Law",
+        "Giáo dục":"Education",
+        "Công nghệ":"Technology",
+        "Kinh doanh":"Business",
+        "Thể thao":"Sports",
+        "Thế giới":"World"
+    }
+};
+
+function setLanguage(lang){
+    localStorage.setItem("market_language", lang);
+    location.reload();
+}
+
+function applyLanguage(){
+    const lang = localStorage.getItem("market_language") || "vi";
+
+    if(lang !== "en"){
+        return;
+    }
+
+    const dictionary = LANGUAGE_TEXT.en;
+
+    const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT
+    );
+
+    const nodes = [];
+
+    while(walker.nextNode()){
+        nodes.push(walker.currentNode);
+    }
+
+    nodes.forEach(node => {
+        const text = node.textContent.trim();
+
+        if(dictionary[text]){
+            node.textContent =
+                node.textContent.replace(
+                    text,
+                    dictionary[text]
+                );
+        }
+    });
+
+    document.documentElement.lang = "en";
+
+    document.getElementById("lang-vi")?.classList.remove("active");
+    document.getElementById("lang-en")?.classList.add("active");
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    applyLanguage
+);
+</script>
 </body>
 </html>
