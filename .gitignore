@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Backup files
+*_backup*.db
+*_backup*.html
+*.bak
+
+# Temporary scripts
+clear_oil.py
+fix_news_pagination.py
+
+# Local downloaded images
+fuel_image_*.jpg
+fuel_images/
+
+# Cloudflare executable
+cloudflared.exe
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project backup files
+*_backup*.py
+*_backup*.html
+*_before_*.py
+*_before_*.html
+*_broken_*.html

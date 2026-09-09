@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>World Market</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    background:#f5f7fa;
+    color:#243b53
+}
+
+.container{
+    width:100%;
+    max-width:1400px;
+    margin:auto;
+    padding:30px
+}
+
+.header{
+    margin-bottom:30px
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+    color:#123b63
+}
+
+.subtitle{
+    margin-top:5px;
+    color:#71869b;
+    font-size:15px
+}
+
+.connection{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    font-size:13px;
+    color:#71869b
+}
+
+.connection-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#2ca58d
+}
+
+.section{
+    background:#fff;
+    border-radius:16px;
+    padding:25px;
+    margin-bottom:30px;
+    box-shadow:0 5px 20px rgba(36,59,83,.06)
+}
+
+.section-title{
+    margin:0 0 5px;
+    font-size:24px;
+    color:#123b63
+}
+
+.section-subtitle{
+    color:#71869b;
+    font-size:14px;
+    margin-bottom:20px
+}
+
+.market-grid,
+.gold-header-grid,
+.vn-fuel-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px
+}
+
+.market-card,
+.vn-card{
+    background:#f8fafc;
+    border:1px solid #e6ebef;
+    border-radius:14px;
+    padding:20px
+}
+
+.market-name{
+    font-size:14px;
+    color:#71869b;
+    margin-bottom:8px
+}
+
+.market-price{
+    font-size:28px;
+    font-weight:700;
+    color:#123b63
+}
+
+.market-change{
+    margin-top:8px;
+    font-size:14px;
+    font-weight:600
+}
+
+.positive{color:#198754!important}
+.negative{color:#dc3545!important}
+.neutral{color:#71869b!important}
+
+.market-unit{
+    margin-top:5px;
+    color:#8a9bad;
+    font-size:13px
+}
+
+.table-wrapper{
+    width:100%;
+    overflow-x:auto
+}
+
+table{
+    width:100%;
+    border-collapse:collapse
+}
+
+th{
+    text-align:left;
+    padding:14px;
+    color:#4d6985;
+    background:#f0f4f8;
+    font-size:14px;
+    white-space:nowrap
+}
+
+td{
+    padding:14px;
+    border-bottom:1px solid #e6ebef;
+    font-size:14px
+}
+
+.table-price{
+    font-weight:700;
+    color:#123b63
+}
+
+.loading-row,
+.error-row{
+    text-align:center;
+    padding:30px;
+    color:#71869b
+}
+
+.error-row{
+    color:#dc3545
+}
+
+/* =========================
+   CHART
+========================= */
+
+.chart-wrapper{
+    position:relative;
+    height:360px;
+    margin-top:20px;
+    background:#fff
+}
+
+.chart-title{
+    margin-top:30px;
+    font-size:20px;
+    font-weight:700;
+    color:#123b63
+}
+
+/* =========================
+   GOLD
+========================= */
+
+.gold-header-grid{
+    margin-bottom:25px
+}
+
+.gold-main-card{
+    background:linear-gradient(135deg,#f8fafc,#eef3f7);
+    border:1px solid #e0e7ed;
+    border-radius:16px;
+    padding:24px
+}
+
+.gold-label{
+    color:#71869b;
+    font-size:14px;
+    margin-bottom:8px
+}
+
+.gold-current-price{
+    font-size:34px;
+    font-weight:700;
+    color:#123b63
+}
+
+.gold-current-change{
+    margin-top:8px;
+    font-size:15px;
+    font-weight:700
+}
+
+.gold-current-updated{
+    margin-top:8px;
+    color:#71869b;
+    font-size:13px
+}
+
+.gold-source{
+    color:#66809a;
+    font-size:13px
+}
+
+.gold-purity-note{
+    color:#71869b;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:18px
+}
+
+.gold-purity-table-wrapper{
+    overflow-x:auto
+}
+
+.gold-purity-table{
+    width:100%;
+    border-collapse:collapse
+}
+
+.gold-purity-table th,
+.gold-purity-table td{
+    padding:15px
+}
+
+.purity-price{
+    font-weight:700;
+    color:#123b63
+}
+
+.gold-summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:20px
+}
+
+.gold-summary-card{
+    background:#f8fafc;
+    border:1px solid #e6ebef;
+    border-radius:12px;
+    padding:18px
+}
+
+.gold-summary-label{
+    color:#71869b;
+    font-size:13px;
+    margin-bottom:7px
+}
+
+.gold-summary-value{
+    font-size:21px;
+    font-weight:700;
+    color:#123b63
+}
+
+/* =========================
+   FUEL
+========================= */
+
+.vn-name{
+    font-weight:700;
+    color:#123b63;
+    margin-bottom:12px
+}
+
+.vn-unit{
+    color:#71869b;
+    font-size:13px
+}
+
+.vn-region{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid #e6ebef
+}
+
+.vn-region:last-child{
+    border-bottom:none
+}
+
+.vn-region-name{
+    color:#71869b;
+    font-size:13px
+}
+
+.vn-region-price{
+    font-weight:700;
+    color:#123b63
+}
+
+/* =========================
+   NEWS
+========================= */
+
+.news-toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px
+}
+
+.news-filter{
+    border:1px solid #dbe3ea;
+    background:#f8fafc;
+    color:#4d6985;
+    border-radius:20px;
+    padding:8px 14px;
+    cursor:pointer;
+    font-size:13px
+}
+
+.news-filter:hover,
+.news-filter.active{
+    background:#123b63;
+    color:#fff;
+    border-color:#123b63
+}
+
+.news-item{
+    padding:18px 0;
+    border-bottom:1px solid #e6ebef
+}
+
+.news-item:first-child{
+    padding-top:0
+}
+
+.news-item:last-child{
+    border-bottom:none
+}
+
+.news-title{
+    margin:0 0 8px;
+    font-size:17px;
+    line-height:1.45
+}
+
+.news-title a{
+    color:#123b63;
+    text-decoration:none
+}
+
+.news-title a:hover{
+    text-decoration:underline
+}
+
+.news-meta{
+    display:flex;
+    gap:7px;
+    align-items:center;
+    color:#71869b;
+    font-size:12px
+}
+
+.news-summary{
+    margin:8px 0 0;
+    color:#5f7488;
+    font-size:13px;
+    line-height:1.55
+}
+
+.news-loading,
+.news-empty{
+    text-align:center;
+    color:#71869b;
+    padding:30px 10px
+}
+
+@media(max-width:800px){
+
+    .container{
+        padding:15px
+    }
+
+    .gold-summary{
+        grid-template-columns:repeat(2,1fr)
+    }
+
+    .chart-wrapper{
+        height:280px
+    }
+
+}
+
+@media(max-width:500px){
+
+    .gold-summary{
+        grid-template-columns:1fr
+    }
+
+    .section{
+        padding:18px
+    }
+
+    .header h1{
+        font-size:27px
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <h1>🌍 World Market</h1>
+
+    <div class="subtitle">
+        Live market monitoring
+    </div>
+
+    <div class="connection">
+
+        <span class="connection-dot"></span>
+
+        <span id="connection-status">
+            Đang kết nối
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     WORLD OIL
+========================= -->
+
+<div class="section">
+
+<h2 class="section-title">
+    Thị trường dầu thế giới
+</h2>
+
+<div class="section-subtitle">
+    Brent, WTI và các sản phẩm năng lượng
+</div>
+
+<div
+    class="market-grid"
+    id="market-grid"
+>
+
+    <div class="market-card">
+
+        <div class="market-name">
+            Đang tải dữ liệu...
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="table-wrapper"
+    style="margin-top:30px"
+>
+
+<table>
+
+<thead>
+
+<tr>
+    <th>Sản phẩm</th>
+    <th>Giá</th>
+    <th>Thay đổi 24h</th>
+    <th>Đơn vị</th>
+    <th>Nguồn</th>
+    <th>Cập nhật</th>
+</tr>
+
+</thead>
+
+<tbody id="market-table">
+
+<tr>
+
+<td
+    colspan="6"
+    class="loading-row"
+>
+    Đang tải dữ liệu...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="chart-title">
+    Brent 24h
+</div>
+
+<div class="chart-wrapper">
+    <canvas id="brent-chart"></canvas>
+</div>
+
+
+<div class="chart-title">
+    WTI 24h
+</div>
+
+<div class="chart-wrapper">
+    <canvas id="wti-chart"></canvas>
+</div>
+
+</div>
+
+
+<!-- =========================
+     GOLD
+========================= -->
+
+<div class="section">
+
+<h2 class="section-title">
+    Thị trường vàng thế giới
+</h2>
+
+<div class="section-subtitle">
+    Gold Spot realtime và giá tham chiếu World Gold Council
+</div>
+
+
+<div class="gold-header-grid">
+
+
+<div class="gold-main-card">
+
+    <div class="gold-label">
+        Giá hiện tại
+    </div>
+
+    <div
+        class="gold-current-price"
+        id="gold-current-price"
+    >
+        —
+    </div>
+
+    <div
+        class="gold-current-change"
+        id="gold-current-change"
+    >
+        —
+    </div>
+
+    <div
+        class="gold-current-updated"
+        id="gold-current-updated"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="gold-main-card">
+
+    <div class="gold-label">
+        Gold Reference
+    </div>
+
+    <div
+        class="gold-current-price"
+        id="gold-reference-price"
+    >
+        —
+    </div>
+
+    <div
+        class="gold-current-updated"
+        id="gold-reference-date"
+    >
+        —
+    </div>
+
+    <div class="gold-source">
+        World Gold Council
+    </div>
+
+</div>
+
+
+</div>
+
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+    <th>Sản phẩm</th>
+    <th>Giá</th>
+    <th>Thay đổi 24h</th>
+    <th>Nguồn</th>
+    <th>Ngày tham chiếu</th>
+</tr>
+
+</thead>
+
+<tbody id="gold-table-body">
+
+<tr>
+
+<td
+    colspan="5"
+    class="loading-row"
+>
+    Đang tải dữ liệu...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- GOLD PURITY -->
+
+<div style="margin-top:30px">
+
+<h3
+    class="section-title"
+    style="font-size:22px"
+>
+    Giá vàng theo hàm lượng
+</h3>
+
+<div class="gold-purity-note">
+
+    Giá quy đổi lý thuyết từ Gold Spot,
+    chưa bao gồm phí gia công,
+    chênh lệch mua bán,
+    thuế hoặc premium.
+
+</div>
+
+<div class="gold-purity-table-wrapper">
+
+<table class="gold-purity-table">
+
+<thead>
+
+<tr>
+    <th>Loại vàng</th>
+    <th>Hàm lượng</th>
+    <th>Giá USD/oz</th>
+    <th>Giá USD/g</th>
+</tr>
+
+</thead>
+
+<tbody id="gold-purity-table-body">
+
+<tr>
+
+<td
+    colspan="4"
+    class="loading-row"
+>
+    Đang tính giá quy đổi...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- GOLD SUMMARY -->
+
+<div class="gold-summary">
+
+<div class="gold-summary-card">
+
+    <div class="gold-summary-label">
+        Open
+    </div>
+
+    <div
+        class="gold-summary-value"
+        id="gold-open"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="gold-summary-card">
+
+    <div class="gold-summary-label">
+        High
+    </div>
+
+    <div
+        class="gold-summary-value"
+        id="gold-high"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="gold-summary-card">
+
+    <div class="gold-summary-label">
+        Low
+    </div>
+
+    <div
+        class="gold-summary-value"
+        id="gold-low"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="gold-summary-card">
+
+    <div class="gold-summary-label">
+        Current
+    </div>
+
+    <div
+        class="gold-summary-value"
+        id="gold-current"
+    >
+        —
+    </div>
+
+</div>
+
+</div>
+
+
+<div class="chart-title">
+    Gold Spot 24h
+</div>
+
+<div class="chart-wrapper">
+    <canvas id="gold-chart"></canvas>
+</div>
+
+</div>
+
+
+<!-- =========================
+     VIETNAM FUEL
+========================= -->
+
+<div class="section">
+
+<h2 class="section-title">
+    Giá xăng dầu Việt Nam
+</h2>
+
+<div class="section-subtitle">
+    Giá bán lẻ Petrolimex
+</div>
+
+
+<div
+    class="vn-fuel-grid"
+    id="vn-fuel-grid"
+>
+
+<div class="vn-card">
+
+    <div class="vn-name">
+        Đang tải dữ liệu...
+    </div>
+
+</div>
+
+</div>
+
+
+<div
+    class="table-wrapper"
+    style="margin-top:30px"
+>
+
+<table>
+
+<thead>
+
+<tr>
+    <th>Sản phẩm</th>
+    <th>Vùng 1</th>
+    <th>Vùng 2</th>
+    <th>Đơn vị</th>
+</tr>
+
+</thead>
+
+<tbody id="vn-fuel-table">
+
+<tr>
+
+<td
+    colspan="4"
+    class="loading-row"
+>
+    Đang tải dữ liệu...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     NEWS
+========================= -->
+
+<div class="section">
+
+<h2 class="section-title">
+    Tin tức
+</h2>
+
+<div class="section-subtitle">
+    Tin tức mới nhất, cập nhật tự động mỗi 3 phút
+</div>
+
+
+<div class="news-toolbar">
+
+<button
+    class="news-filter active"
+    data-category=""
+>
+    Tất cả
+</button>
+
+<button
+    class="news-filter"
+    data-category="society"
+>
+    Xã hội
+</button>
+
+<button
+    class="news-filter"
+    data-category="politics"
+>
+    Chính trị
+</button>
+
+<button
+    class="news-filter"
+    data-category="law"
+>
+    Pháp luật
+</button>
+
+<button
+    class="news-filter"
+    data-category="education"
+>
+    Giáo dục
+</button>
+
+<button
+    class="news-filter"
+    data-category="technology"
+>
+    Công nghệ
+</button>
+
+<button
+    class="news-filter"
+    data-category="business"
+>
+    Kinh doanh
+</button>
+
+<button
+    class="news-filter"
+    data-category="sports"
+>
+    Thể thao
+</button>
+
+<button
+    class="news-filter"
+    data-category="world"
+>
+    Thế giới
+</button>
+
+</div>
+
+
+<div
+    id="news-list"
+>
+
+<div class="news-loading">
+    Đang tải tin tức...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+let brentChart = null;
+let wtiChart = null;
+let goldChart = null;
+
+let currentNewsCategory = "";
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function escapeHtml(value){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+function numberValue(value){
+
+    if(
+        value === null ||
+        value === undefined ||
+        value === ""
+    ){
+        return null;
+    }
+
+    const n = Number(value);
+
+    return Number.isFinite(n)
+        ? n
+        : null;
+}
+
+
+function formatUsdPrice(value){
+
+    const n = numberValue(value);
+
+    if(n === null){
+        return "—";
+    }
+
+    return "$" +
+        n.toLocaleString(
+            "en-US",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
+}
+
+
+function formatGoldPrice(value){
+
+    const n = numberValue(value);
+
+    if(n === null){
+        return "—";
+    }
+
+    return "$" +
+        n.toLocaleString(
+            "en-US",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        ) +
+        "/oz";
+}
+
+
+function formatVnPrice(value){
+
+    const n = numberValue(value);
+
+    if(n === null){
+        return "—";
+    }
+
+    return n.toLocaleString("vi-VN");
+}
+
+
+function formatPercent(value){
+
+    const n = numberValue(value);
+
+    if(n === null){
+        return "—";
+    }
+
+    return (
+        n > 0 ? "+" : ""
+    ) +
+    n.toFixed(2) +
+    "%";
+}
+
+
+function formatTime(value){
+
+    if(!value){
+        return "—";
+    }
+
+    const d = new Date(value);
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+        return escapeHtml(value);
+    }
+
+    return d.toLocaleString(
+        "vi-VN",
+        {
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            day:"2-digit",
+            month:"2-digit"
+        }
+    );
+}
+
+
+function chartTime(value){
+
+    if(!value){
+        return "";
+    }
+
+    const d = new Date(value);
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+        return "";
+    }
+
+    return d.toLocaleTimeString(
+        "vi-VN",
+        {
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+}
+
+
+function getChangeClass(value){
+
+    const n = numberValue(value);
+
+    if(n === null){
+        return "neutral";
+    }
+
+    if(n > 0){
+        return "positive";
+    }
+
+    if(n < 0){
+        return "negative";
+    }
+
+    return "neutral";
+}
+
+
+/* =========================================================
+   OIL DATA
+========================================================= */
+
+function objectPricesToItems(
+    prices,
+    source
+){
+
+    if(
+        !prices ||
+        typeof prices !== "object"
+    ){
+        return [];
+    }
+
+    return Object.entries(
+        prices
+    ).map(
+        ([symbol,value]) => {
+
+            if(
+                value &&
+                typeof value === "object"
+            ){
+
+                return {
+                    symbol:symbol,
+
+                    name:
+                        value.name ||
+                        symbol,
+
+                    price:
+                        value.price ??
+                        value.value ??
+                        null,
+
+                    change_24h:
+                        value.change_24h ??
+                        value.change ??
+                        value.percent_change ??
+                        null,
+
+                    unit:
+                        value.unit ||
+                        "USD",
+
+                    source:
+                        value.source ||
+                        source,
+
+                    updated_at:
+                        value.updated_at ||
+                        value.timestamp ||
+                        null
+                };
+
+            }
+
+            return {
+                symbol:symbol,
+                name:symbol,
+                price:value,
+                change_24h:null,
+                unit:"USD",
+                source:source,
+                updated_at:null
+            };
+
+        }
+    );
+
+}
+
+
+function extractOilItems(data){
+
+    if(Array.isArray(data)){
+        return data;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.data)
+    ){
+        return data.data;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.items)
+    ){
+        return data.items;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.prices)
+    ){
+        return data.prices;
+    }
+
+    if(
+        data &&
+        data.oilpriceapi &&
+        data.oilpriceapi.prices
+    ){
+
+        return objectPricesToItems(
+            data.oilpriceapi.prices,
+            "OilPriceAPI"
+        );
+
+    }
+
+    if(
+        data &&
+        data.yahoo &&
+        data.yahoo.prices
+    ){
+
+        return objectPricesToItems(
+            data.yahoo.prices,
+            "Yahoo"
+        );
+
+    }
+
+    if(
+        data &&
+        data.prices &&
+        typeof data.prices === "object"
+    ){
+
+        return objectPricesToItems(
+            data.prices,
+            data.source || ""
+        );
+
+    }
+
+    return [];
+
+}
+
+
+/* =========================================================
+   WORLD OIL
+========================================================= */
+
+async function loadMarket(){
+
+    const grid =
+        document.getElementById(
+            "market-grid"
+        );
+
+    const table =
+        document.getElementById(
+            "market-table"
+        );
+
+    try{
+
+        const response =
+            await fetch(
+                "/world-oil",
+                {
+                    cache:"no-store"
+                }
+            );
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        console.log(
+            "WORLD OIL:",
+            data
+        );
+
+        const items =
+            extractOilItems(data);
+
+        grid.innerHTML = "";
+        table.innerHTML = "";
+
+        if(!items.length){
+
+            grid.innerHTML = `
+
+                <div class="market-card">
+
+                    <div class="market-name">
+                        Chưa có dữ liệu realtime
+                    </div>
+
+                    <div class="market-price">
+                        —
+                    </div>
+
+                </div>
+
+            `;
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="loading-row"
+                    >
+                        API chưa trả về dữ liệu realtime
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        items.forEach(
+            item => {
+
+                const name =
+                    item.name ||
+                    item.symbol ||
+                    "Unknown";
+
+                const price =
+                    item.price ??
+                    item.value;
+
+                const change =
+                    item.change_24h ??
+                    item.change ??
+                    item.percent_change;
+
+                const unit =
+                    item.unit ||
+                    "USD";
+
+                const source =
+                    item.source ||
+                    "";
+
+                const updated =
+                    item.updated_at ||
+                    item.timestamp;
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "market-card";
+
+                card.innerHTML = `
+
+                    <div class="market-name">
+                        ${escapeHtml(name)}
+                    </div>
+
+                    <div class="market-price">
+                        ${formatUsdPrice(price)}
+                    </div>
+
+                    <div
+                        class="
+                            market-change
+                            ${getChangeClass(change)}
+                        "
+                    >
+                        ${formatPercent(change)}
+                    </div>
+
+                    <div class="market-unit">
+                        ${escapeHtml(unit)}
+                    </div>
+
+                `;
+
+                grid.appendChild(card);
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(name)}
+                    </td>
+
+                    <td class="table-price">
+                        ${formatUsdPrice(price)}
+                    </td>
+
+                    <td
+                        class="${getChangeClass(change)}"
+                    >
+                        ${formatPercent(change)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(unit)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(source)}
+                    </td>
+
+                    <td>
+                        ${formatTime(updated)}
+                    </td>
+
+                `;
+
+                table.appendChild(row);
+
+            }
+        );
+
+
+        document.getElementById(
+            "connection-status"
+        ).textContent =
+            "Đã kết nối";
+
+    }
+
+    catch(error){
+
+        console.error(
+            "WORLD OIL ERROR:",
+            error
+        );
+
+        grid.innerHTML = `
+
+            <div class="market-card">
+
+                <div class="market-name">
+                    Lỗi tải dữ liệu
+                </div>
+
+                <div class="market-price">
+                    —
+                </div>
+
+                <div class="market-unit">
+                    ${escapeHtml(error.message)}
+                </div>
+
+            </div>
+
+        `;
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="error-row"
+                >
+                    Không thể tải dữ liệu dầu
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   OIL HISTORY CHART
+========================================================= */
+
+async function loadHistory(
+    symbol,
+    chartType
+){
+
+    try{
+
+        const response =
+            await fetch(
+                `/world-oil/history?symbol=${encodeURIComponent(symbol)}&hours=24`,
+                {
+                    cache:"no-store"
+                }
+            );
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+        const result =
+            await response.json();
+
+        let data = [];
+
+        if(Array.isArray(result)){
+            data = result;
+        }
+        else if(
+            Array.isArray(result.data)
+        ){
+            data = result.data;
+        }
+        else if(
+            Array.isArray(result.items)
+        ){
+            data = result.items;
+        }
+        else if(
+            Array.isArray(result.history)
+        ){
+            data = result.history;
+        }
+
+
+        const points =
+            data
+                .map(
+                    item => {
+
+                        const price =
+                            numberValue(
+                                item.price ??
+                                item.value ??
+                                item.close
+                            );
+
+                        if(price === null){
+                            return null;
+                        }
+
+                        return {
+                            time:
+                                item.updated_at ||
+                                item.timestamp ||
+                                item.time ||
+                                item.date,
+
+                            price
+                        };
+
+                    }
+                )
+                .filter(
+                    x => x !== null
+                );
+
+
+        if(!points.length){
+            return;
+        }
+
+
+        const labels =
+            points.map(
+                item =>
+                    chartTime(
+                        item.time
+                    )
+            );
+
+
+        const prices =
+            points.map(
+                item =>
+                    item.price
+            );
+
+
+        let chart =
+            chartType === "brent"
+                ? brentChart
+                : wtiChart;
+
+
+        if(chart){
+            chart.destroy();
+        }
+
+
+        const canvas =
+            document.getElementById(
+                chartType === "brent"
+                    ? "brent-chart"
+                    : "wti-chart"
+            );
+
+
+        if(!canvas){
+            return;
+        }
+
+
+        /*
+         * BIỂU ĐỒ KIỂU TÀI CHÍNH
+         *
+         * tension: 0
+         * = đường thẳng, không bo cong
+         *
+         * pointRadius: 0
+         * = không hiển thị chấm
+         *
+         * Y axis bên phải
+         */
+
+        chart =
+            new Chart(
+                canvas,
+                {
+
+                    type:"line",
+
+                    data:{
+
+                        labels,
+
+                        datasets:[
+
+                            {
+
+                                label:symbol,
+
+                                data:prices,
+
+                                borderWidth:3,
+
+                                borderColor:"#123b63",
+
+                                pointRadius:0,
+
+                                pointHoverRadius:5,
+
+                                pointHitRadius:10,
+
+                                tension:0,
+
+                                fill:false,
+
+                                segment:{
+
+                                    borderColor:
+                                        context => {
+
+                                            const y0 =
+                                                context
+                                                    .p0
+                                                    .parsed
+                                                    .y;
+
+                                            const y1 =
+                                                context
+                                                    .p1
+                                                    .parsed
+                                                    .y;
+
+                                            if(y1 > y0){
+                                                return "#123b63";
+                                            }
+
+                                            if(y1 < y0){
+                                                return "#dc3545";
+                                            }
+
+                                            return "#123b63";
+
+                                        }
+
+                                }
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options:{
+
+                        responsive:true,
+
+                        maintainAspectRatio:false,
+
+
+                        interaction:{
+
+                            mode:"index",
+
+                            intersect:false
+
+                        },
+
+
+                        plugins:{
+
+                            legend:{
+
+                                display:false
+
+                            },
+
+
+                            tooltip:{
+
+                                displayColors:false,
+
+                                callbacks:{
+
+                                    title:function(items){
+
+                                        return (
+                                            items[0]?.label ||
+                                            ""
+                                        );
+
+                                    },
+
+
+                                    label:function(context){
+
+                                        return "$" +
+                                            Number(
+                                                context.raw
+                                            ).toLocaleString(
+                                                "en-US",
+                                                {
+                                                    minimumFractionDigits:2,
+                                                    maximumFractionDigits:2
+                                                }
+                                            );
+
+                                    }
+
+                                }
+
+                            }
+
+                        },
+
+
+                        scales:{
+
+                            x:{
+
+                                grid:{
+
+                                    color:
+                                        "rgba(36,59,83,.10)",
+
+                                    drawBorder:false
+
+                                },
+
+                                ticks:{
+
+                                    maxTicksLimit:8,
+
+                                    color:"#71869b",
+
+                                    font:{
+
+                                        size:12
+
+                                    }
+
+                                }
+
+                            },
+
+
+                            y:{
+
+                                position:"right",
+
+                                beginAtZero:false,
+
+                                grid:{
+
+                                    color:
+                                        "rgba(36,59,83,.10)",
+
+                                    drawBorder:false
+
+                                },
+
+                                ticks:{
+
+                                    color:"#71869b",
+
+                                    font:{
+
+                                        size:12
+
+                                    },
+
+                                    callback:
+                                        function(value){
+
+                                            return "$" +
+                                                Number(
+                                                    value
+                                                ).toLocaleString(
+                                                    "en-US",
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                );
+
+                                        }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            );
+
+
+        if(chartType === "brent"){
+
+            brentChart =
+                chart;
+
+        }
+        else{
+
+            wtiChart =
+                chart;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "HISTORY ERROR:",
+            symbol,
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GOLD PURITY
+========================================================= */
+
+function renderGoldPurityTable(
+    spot
+){
+
+    const table =
+        document.getElementById(
+            "gold-purity-table-body"
+        );
+
+    const price =
+        numberValue(spot);
+
+
+    if(price === null){
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="error-row"
+                >
+                    Chưa có giá Gold Spot
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    const OZ_TO_GRAM =
+        31.1034768;
+
+
+    const types = [
+
+        ["24K / 999.9",99.99],
+
+        ["24K / 999",99.90],
+
+        ["22K",91.67],
+
+        ["18K",75.00],
+
+        ["14K",58.33],
+
+        ["12K",50.00],
+
+        ["10K",41.67]
+
+    ];
+
+
+    table.innerHTML = "";
+
+
+    types.forEach(
+        ([name,purity]) => {
+
+            const oz =
+                price *
+                purity /
+                100;
+
+
+            const gram =
+                oz /
+                OZ_TO_GRAM;
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    <strong>
+                        ${name}
+                    </strong>
+                </td>
+
+                <td>
+                    ${purity.toFixed(2)}%
+                </td>
+
+                <td class="purity-price">
+                    ${formatUsdPrice(oz)}
+                </td>
+
+                <td class="purity-price">
+                    ${formatUsdPrice(gram)}
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GOLD CURRENT
+========================================================= */
+
+async function loadGold(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/gold",
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const gold =
+            await response.json();
+
+
+        console.log(
+            "GOLD:",
+            gold
+        );
+
+
+        const price =
+            numberValue(
+                gold.price ??
+                gold.current ??
+                gold.value
+            );
+
+
+        document.getElementById(
+            "gold-current-price"
+        ).textContent =
+            formatGoldPrice(price);
+
+
+        const change =
+            gold.change_24h ??
+            gold.change ??
+            gold.percent_change;
+
+
+        const changeElement =
+            document.getElementById(
+                "gold-current-change"
+            );
+
+
+        changeElement.textContent =
+            formatPercent(change);
+
+
+        changeElement.className =
+            "gold-current-change " +
+            getChangeClass(change);
+
+
+        document.getElementById(
+            "gold-current-updated"
+        ).textContent =
+            formatTime(
+                gold.updated_at ||
+                gold.timestamp
+            );
+
+
+        renderGoldPurityTable(
+            price
+        );
+
+
+        const table =
+            document.getElementById(
+                "gold-table-body"
+            );
+
+
+        table.innerHTML = "";
+
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.innerHTML = `
+
+            <td>
+                <strong>
+                    Gold Spot
+                </strong>
+            </td>
+
+            <td class="table-price">
+                ${formatGoldPrice(price)}
+            </td>
+
+            <td
+                class="${getChangeClass(change)}"
+            >
+                ${formatPercent(change)}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    gold.source ||
+                    "Gold API"
+                )}
+            </td>
+
+            <td>
+                ${formatTime(
+                    gold.updated_at ||
+                    gold.timestamp
+                )}
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+
+        /* WGC */
+
+        const referenceResponse =
+            await fetch(
+                "/gold/reference",
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(referenceResponse.ok){
+
+            const reference =
+                await referenceResponse.json();
+
+
+            const referencePrice =
+                numberValue(
+                    reference.price ??
+                    reference.value
+                );
+
+
+            document.getElementById(
+                "gold-reference-price"
+            ).textContent =
+                formatGoldPrice(
+                    referencePrice
+                );
+
+
+            document.getElementById(
+                "gold-reference-date"
+            ).textContent =
+                escapeHtml(
+                    reference.reference_date ||
+                    reference.date ||
+                    "—"
+                );
+
+
+            const referenceRow =
+                document.createElement(
+                    "tr"
+                );
+
+
+            referenceRow.innerHTML = `
+
+                <td>
+                    <strong>
+                        Gold Reference
+                    </strong>
+                </td>
+
+                <td class="table-price">
+                    ${formatGoldPrice(
+                        referencePrice
+                    )}
+                </td>
+
+                <td>
+                    —
+                </td>
+
+                <td>
+                    World Gold Council
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        reference.reference_date ||
+                        reference.date ||
+                        "—"
+                    )}
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                referenceRow
+            );
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "GOLD ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "gold-current-price"
+        ).textContent =
+            "Không có dữ liệu";
+
+    }
+
+}
+
+
+/* =========================================================
+   GOLD HISTORY
+========================================================= */
+
+async function loadGoldHistory(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/gold/history?symbol=XAU&hours=24",
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        let data = [];
+
+
+        if(Array.isArray(result)){
+
+            data =
+                result;
+
+        }
+        else if(
+            Array.isArray(result.data)
+        ){
+
+            data =
+                result.data;
+
+        }
+        else if(
+            Array.isArray(result.items)
+        ){
+
+            data =
+                result.items;
+
+        }
+
+
+        const points =
+            data
+                .map(
+                    item => {
+
+                        const price =
+                            numberValue(
+                                item.price ??
+                                item.value ??
+                                item.close
+                            );
+
+
+                        if(price === null){
+                            return null;
+                        }
+
+
+                        return {
+
+                            time:
+                                item.updated_at ||
+                                item.timestamp ||
+                                item.time,
+
+                            price
+
+                        };
+
+                    }
+                )
+                .filter(
+                    x => x !== null
+                );
+
+
+        if(!points.length){
+            return;
+        }
+
+
+        const labels =
+            points.map(
+                x =>
+                    chartTime(
+                        x.time
+                    )
+            );
+
+
+        const prices =
+            points.map(
+                x =>
+                    x.price
+            );
+
+
+        if(goldChart){
+            goldChart.destroy();
+        }
+
+
+        goldChart =
+            new Chart(
+                document.getElementById(
+                    "gold-chart"
+                ),
+                {
+
+                    type:"line",
+
+                    data:{
+
+                        labels,
+
+                        datasets:[
+
+                            {
+
+                                label:"Gold Spot",
+
+                                data:prices,
+
+                                tension:0,
+
+                                fill:false,
+
+                                pointRadius:0,
+
+                                pointHoverRadius:5,
+
+                                borderWidth:3,
+
+                                borderColor:"#123b63",
+
+                                segment:{
+
+                                    borderColor:
+                                        context => {
+
+                                            const y0 =
+                                                context
+                                                    .p0
+                                                    .parsed
+                                                    .y;
+
+                                            const y1 =
+                                                context
+                                                    .p1
+                                                    .parsed
+                                                    .y;
+
+                                            if(y1 > y0){
+                                                return "#123b63";
+                                            }
+
+                                            if(y1 < y0){
+                                                return "#dc3545";
+                                            }
+
+                                            return "#123b63";
+
+                                        }
+
+                                }
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options:{
+
+                        responsive:true,
+
+                        maintainAspectRatio:false,
+
+                        interaction:{
+
+                            mode:"index",
+
+                            intersect:false
+
+                        },
+
+
+                        plugins:{
+
+                            legend:{
+                                display:false
+                            },
+
+                            tooltip:{
+
+                                displayColors:false,
+
+                                callbacks:{
+
+                                    label:function(context){
+
+                                        return "$" +
+                                            Number(
+                                                context.raw
+                                            ).toLocaleString(
+                                                "en-US",
+                                                {
+                                                    minimumFractionDigits:2,
+                                                    maximumFractionDigits:2
+                                                }
+                                            );
+
+                                    }
+
+                                }
+
+                            }
+
+                        },
+
+
+                        scales:{
+
+                            x:{
+
+                                grid:{
+
+                                    color:
+                                        "rgba(36,59,83,.10)",
+
+                                    drawBorder:false
+
+                                },
+
+                                ticks:{
+
+                                    maxTicksLimit:8,
+
+                                    color:"#71869b"
+
+                                }
+
+                            },
+
+
+                            y:{
+
+                                position:"right",
+
+                                beginAtZero:false,
+
+                                grid:{
+
+                                    color:
+                                        "rgba(36,59,83,.10)",
+
+                                    drawBorder:false
+
+                                },
+
+                                ticks:{
+
+                                    color:"#71869b",
+
+                                    callback:
+                                        function(value){
+
+                                            return "$" +
+                                                Number(
+                                                    value
+                                                ).toLocaleString(
+                                                    "en-US",
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                );
+
+                                        }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            );
+
+
+        document.getElementById(
+            "gold-open"
+        ).textContent =
+            formatGoldPrice(
+                prices[0]
+            );
+
+
+        document.getElementById(
+            "gold-high"
+        ).textContent =
+            formatGoldPrice(
+                Math.max(...prices)
+            );
+
+
+        document.getElementById(
+            "gold-low"
+        ).textContent =
+            formatGoldPrice(
+                Math.min(...prices)
+            );
+
+
+        document.getElementById(
+            "gold-current"
+        ).textContent =
+            formatGoldPrice(
+                prices[
+                    prices.length - 1
+                ]
+            );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "GOLD HISTORY ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   VIETNAM FUEL
+========================================================= */
+
+async function loadVietnamFuel(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/fuel",
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "FUEL:",
+            result
+        );
+
+
+        let items = [];
+
+
+        if(Array.isArray(result)){
+
+            items =
+                result;
+
+        }
+        else if(
+            Array.isArray(result.prices)
+        ){
+
+            items =
+                result.prices;
+
+        }
+        else if(
+            Array.isArray(result.data)
+        ){
+
+            items =
+                result.data;
+
+        }
+        else if(
+            Array.isArray(result.items)
+        ){
+
+            items =
+                result.items;
+
+        }
+
+
+        renderVietnamFuel(
+            items
+        );
+
+
+        renderFuelTable(
+            items
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "FUEL ERROR:",
+            error
+        );
+
+
+        renderFuelError(
+            "Không thể tải dữ liệu xăng dầu"
+        );
+
+    }
+
+}
+
+
+function renderVietnamFuel(
+    items
+){
+
+    const grid =
+        document.getElementById(
+            "vn-fuel-grid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    if(!items.length){
+
+        grid.innerHTML = `
+
+            <div class="vn-card">
+
+                <div class="vn-name">
+                    Không có dữ liệu
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    items.forEach(
+        item => {
+
+            const name =
+                item.name ||
+                item.product ||
+                "Unknown";
+
+
+            const r1 =
+                item.region_1 ??
+                item.region1 ??
+                item.zone_1 ??
+                item.price_region_1;
+
+
+            const r2 =
+                item.region_2 ??
+                item.region2 ??
+                item.zone_2 ??
+                item.price_region_2;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "vn-card";
+
+
+            card.innerHTML = `
+
+                <div class="vn-name">
+                    ${escapeHtml(name)}
+                </div>
+
+                <div class="vn-region">
+
+                    <span class="vn-region-name">
+                        Vùng 1
+                    </span>
+
+                    <span class="vn-region-price">
+                        ${formatVnPrice(r1)}
+                    </span>
+
+                </div>
+
+                <div class="vn-region">
+
+                    <span class="vn-region-name">
+                        Vùng 2
+                    </span>
+
+                    <span class="vn-region-price">
+                        ${formatVnPrice(r2)}
+                    </span>
+
+                </div>
+
+                <div class="vn-unit">
+                    ${escapeHtml(
+                        item.unit ||
+                        "VND/liter"
+                    )}
+                </div>
+
+            `;
+
+
+            grid.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+function renderFuelTable(
+    items
+){
+
+    const table =
+        document.getElementById(
+            "vn-fuel-table"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if(!items.length){
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="error-row"
+                >
+                    Không có dữ liệu
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    items.forEach(
+        item => {
+
+            const name =
+                item.name ||
+                item.product ||
+                "Unknown";
+
+
+            const r1 =
+                item.region_1 ??
+                item.region1 ??
+                item.zone_1 ??
+                item.price_region_1;
+
+
+            const r2 =
+                item.region_2 ??
+                item.region2 ??
+                item.zone_2 ??
+                item.price_region_2;
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(name)}
+                </td>
+
+                <td class="table-price">
+                    ${formatVnPrice(r1)}
+                </td>
+
+                <td class="table-price">
+                    ${formatVnPrice(r2)}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        item.unit ||
+                        "VND/liter"
+                    )}
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+function renderFuelError(
+    message
+){
+
+    document.getElementById(
+        "vn-fuel-grid"
+    ).innerHTML = `
+
+        <div class="vn-card">
+
+            <div class="vn-name">
+                Giá xăng dầu Việt Nam
+            </div>
+
+            <div class="vn-unit">
+                ${escapeHtml(message)}
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "vn-fuel-table"
+    ).innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="4"
+                class="error-row"
+            >
+                ${escapeHtml(message)}
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+/* =========================================================
+   NEWS
+========================================================= */
+
+function formatNewsTime(
+    value
+){
+
+    if(!value){
+        return "";
+    }
+
+
+    const d =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return escapeHtml(
+            value
+        );
+
+    }
+
+
+    return d.toLocaleString(
+        "vi-VN",
+        {
+            hour:"2-digit",
+            minute:"2-digit",
+            day:"2-digit",
+            month:"2-digit"
+        }
+    );
+
+}
+
+
+async function loadNews(
+    category = currentNewsCategory
+){
+
+    const list =
+        document.getElementById(
+            "news-list"
+        );
+
+
+    if(!list){
+        return;
+    }
+
+
+    try{
+
+        const url =
+            category
+                ? `/news?limit=30&category=${encodeURIComponent(category)}`
+                : "/news?limit=30";
+
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        const items =
+            Array.isArray(
+                result.data
+            )
+                ? result.data
+                : [];
+
+
+        list.innerHTML = "";
+
+
+        if(!items.length){
+
+            list.innerHTML = `
+
+                <div class="news-empty">
+                    Không có tin tức
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        items.forEach(
+            item => {
+
+                const article =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                article.className =
+                    "news-item";
+
+
+                const articleUrl =
+                    item.url ||
+                    item.link ||
+                    "#";
+
+
+                article.innerHTML = `
+
+                    <h3 class="news-title">
+
+                        <a
+                            href="${escapeHtml(
+                                articleUrl
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+
+                            ${escapeHtml(
+                                item.title ||
+                                "Không có tiêu đề"
+                            )}
+
+                        </a>
+
+                    </h3>
+
+
+                    <div class="news-meta">
+
+                        <span>
+                            ${escapeHtml(
+                                item.source ||
+                                ""
+                            )}
+                        </span>
+
+                        <span>
+                            •
+                        </span>
+
+                        <span>
+                            ${formatNewsTime(
+                                item.published_at ||
+                                item.published ||
+                                item.pub_date
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    ${
+                        item.summary
+                            ? `
+
+                                <p class="news-summary">
+
+                                    ${escapeHtml(
+                                        item.summary
+                                    )}
+
+                                </p>
+
+                            `
+                            : ""
+                    }
+
+                `;
+
+
+                list.appendChild(
+                    article
+                );
+
+            }
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "NEWS ERROR:",
+            error
+        );
+
+
+        list.innerHTML = `
+
+            <div class="news-empty">
+                Không thể tải tin tức
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   NEWS FILTER
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const button =
+            event.target.closest(
+                ".news-filter"
+            );
+
+
+        if(!button){
+            return;
+        }
+
+
+        document
+            .querySelectorAll(
+                ".news-filter"
+            )
+            .forEach(
+                item =>
+                    item.classList.remove(
+                        "active"
+                    )
+            );
+
+
+        button.classList.add(
+            "active"
+        );
+
+
+        currentNewsCategory =
+            button.dataset.category ||
+            "";
+
+
+        loadNews(
+            currentNewsCategory
+        );
+
+    }
+);
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+async function refresh(){
+
+    console.log(
+        "========== MARKET REFRESH =========="
+    );
+
+
+    await Promise.allSettled([
+
+        loadMarket(),
+
+        loadHistory(
+            "Brent",
+            "brent"
+        ),
+
+        loadHistory(
+            "WTI",
+            "wti"
+        ),
+
+        loadGold(),
+
+        loadGoldHistory(),
+
+        loadVietnamFuel(),
+
+        loadNews()
+
+    ]);
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        refresh();
+
+    }
+);
+
+
+/* =========================================================
+   AUTO REFRESH 3 PHÚT
+========================================================= */
+
+setInterval(
+    refresh,
+    180000
+);
+
+
+/* NEWS PAGINATION ROBUST FINAL */
+
+(function () {
+
+    const PAGE_SIZE = 10;
+
+    let allNews = [];
+    let currentPage = 1;
+    let currentCategory = "";
+
+    function escapeNews(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatTime(value) {
+
+        if (!value) return "";
+
+        try {
+
+            const d = new Date(value);
+
+            if (!isNaN(d.getTime())) {
+
+                return d.toLocaleString(
+                    "vi-VN",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        day: "2-digit",
+                        month: "2-digit"
+                    }
+                );
+            }
+
+        } catch (e) {}
+
+        return value;
+    }
+
+
+    async function loadNewsPagination(category = "") {
+
+        currentCategory = category || "";
+        currentPage = 1;
+
+        const list =
+            document.getElementById("news-list");
+
+        const pagination =
+            document.getElementById("news-pagination");
+
+        const info =
+            document.getElementById("news-page-info");
+
+        if (!list) return;
+
+        try {
+
+            const url =
+                currentCategory
+                ? `/news?limit=200&category=${encodeURIComponent(currentCategory)}`
+                : "/news?limit=200";
+
+            const response =
+                await fetch(
+                    url,
+                    { cache: "no-store" }
+                );
+
+            if (!response.ok) {
+
+                console.error(
+                    "News API error:",
+                    response.status
+                );
+
+                return;
+            }
+
+            const result =
+                await response.json();
+
+            allNews =
+                Array.isArray(result.data)
+                ? result.data
+                : [];
+
+            renderNewsPage();
+
+        } catch (error) {
+
+            console.error(
+                "News pagination error:",
+                error
+            );
+        }
+    }
+
+
+    function renderNewsPage() {
+
+        const list =
+            document.getElementById("news-list");
+
+        const pagination =
+            document.getElementById("news-pagination");
+
+        const info =
+            document.getElementById("news-page-info");
+
+        if (!list) return;
+
+        const totalPages =
+            Math.max(
+                1,
+                Math.ceil(
+                    allNews.length /
+                    PAGE_SIZE
+                )
+            );
+
+        if (
+            currentPage >
+            totalPages
+        ) {
+            currentPage = totalPages;
+        }
+
+        const start =
+            (currentPage - 1) *
+            PAGE_SIZE;
+
+        const items =
+            allNews.slice(
+                start,
+                start + PAGE_SIZE
+            );
+
+        list.innerHTML = "";
+
+        if (!items.length) {
+
+            list.innerHTML =
+                '<div class="news-empty">Không có tin tức</div>';
+
+        } else {
+
+            items.forEach(function (item) {
+
+                const article =
+                    document.createElement("article");
+
+                article.className =
+                    "news-item";
+
+                const title =
+                    item.title ||
+                    "Không có tiêu đề";
+
+                const url =
+                    item.url ||
+                    item.link ||
+                    "#";
+
+                const source =
+                    item.source ||
+                    "";
+
+                const published =
+                    item.published_at ||
+                    item.published ||
+                    "";
+
+                const summary =
+                    item.summary ||
+                    item.description ||
+                    "";
+
+                article.innerHTML = `
+
+                    <h3 class="news-title">
+
+                        <a
+                            href="${escapeNews(url)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            ${escapeNews(title)}
+                        </a>
+
+                    </h3>
+
+                    <div class="news-meta">
+
+                        <span>
+                            ${escapeNews(source)}
+                        </span>
+
+                        <span>•</span>
+
+                        <span>
+                            ${escapeNews(
+                                formatTime(published)
+                            )}
+                        </span>
+
+                    </div>
+
+                    ${
+                        summary
+                        ?
+                        `
+                        <p class="news-summary">
+                            ${escapeNews(summary)}
+                        </p>
+                        `
+                        :
+                        ""
+                    }
+
+                `;
+
+                list.appendChild(article);
+            });
+        }
+
+        renderPagination(totalPages);
+
+        if (info) {
+
+            if (allNews.length) {
+
+                const from =
+                    start + 1;
+
+                const to =
+                    Math.min(
+                        start + PAGE_SIZE,
+                        allNews.length
+                    );
+
+                info.textContent =
+                    `Hiển thị ${from}–${to} / ${allNews.length} tin`;
+
+            } else {
+
+                info.textContent = "";
+            }
+        }
+    }
+
+
+    function renderPagination(totalPages) {
+
+        const pagination =
+            document.getElementById(
+                "news-pagination"
+            );
+
+        if (!pagination) return;
+
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1) {
+            return;
+        }
+
+
+        function button(
+            text,
+            page,
+            active = false,
+            disabled = false
+        ) {
+
+            const b =
+                document.createElement("button");
+
+            b.type = "button";
+
+            b.className =
+                "news-page-btn";
+
+            if (active) {
+                b.classList.add("active");
+            }
+
+            b.textContent = text;
+            b.disabled = disabled;
+
+            if (!disabled) {
+
+                b.addEventListener(
+                    "click",
+                    function () {
+
+                        currentPage = page;
+
+                        renderNewsPage();
+
+                        const section =
+                            document.getElementById(
+                                "news-list"
+                            );
+
+                        if (section) {
+
+                            section.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+                        }
+                    }
+                );
+            }
+
+            pagination.appendChild(b);
+        }
+
+
+        button(
+            "‹ Trước",
+            Math.max(
+                1,
+                currentPage - 1
+            ),
+            false,
+            currentPage === 1
+        );
+
+
+        if (totalPages <= 7) {
+
+            for (
+                let i = 1;
+                i <= totalPages;
+                i++
+            ) {
+
+                button(
+                    String(i),
+                    i,
+                    i === currentPage
+                );
+            }
+
+        } else {
+
+            button(
+                "1",
+                1,
+                currentPage === 1
+            );
+
+            let start =
+                Math.max(
+                    2,
+                    currentPage - 1
+                );
+
+            let end =
+                Math.min(
+                    totalPages - 1,
+                    currentPage + 1
+                );
+
+            if (currentPage <= 3) {
+                start = 2;
+                end = 4;
+            }
+
+            if (
+                currentPage >=
+                totalPages - 2
+            ) {
+                start =
+                    totalPages - 3;
+
+                end =
+                    totalPages - 1;
+            }
+
+            if (start > 2) {
+
+                const span =
+                    document.createElement("span");
+
+                span.className =
+                    "news-page-ellipsis";
+
+                span.textContent = "…";
+
+                pagination.appendChild(span);
+            }
+
+            for (
+                let i = start;
+                i <= end;
+                i++
+            ) {
+
+                button(
+                    String(i),
+                    i,
+                    i === currentPage
+                );
+            }
+
+            if (
+                end <
+                totalPages - 1
+            ) {
+
+                const span =
+                    document.createElement("span");
+
+                span.className =
+                    "news-page-ellipsis";
+
+                span.textContent = "…";
+
+                pagination.appendChild(span);
+            }
+
+            button(
+                String(totalPages),
+                totalPages,
+                currentPage === totalPages
+            );
+        }
+
+
+        button(
+            "Sau ›",
+            Math.min(
+                totalPages,
+                currentPage + 1
+            ),
+            false,
+            currentPage === totalPages
+        );
+    }
+
+
+    function setupNewsFilters() {
+
+        const filters =
+            document.querySelectorAll(
+                ".news-filter"
+            );
+
+        filters.forEach(function (filter) {
+
+            filter.addEventListener(
+                "click",
+                function () {
+
+                    filters.forEach(
+                        function (x) {
+                            x.classList.remove(
+                                "active"
+                            );
+                        }
+                    );
+
+                    filter.classList.add(
+                        "active"
+                    );
+
+                    const category =
+                        filter.dataset.category ||
+                        filter.getAttribute(
+                            "data-category"
+                        ) ||
+                        "";
+
+                    loadNewsPagination(
+                        category
+                    );
+                }
+            );
+        });
+    }
+
+
+    function start() {
+
+        const list =
+            document.getElementById(
+                "news-list"
+            );
+
+        if (!list) return;
+
+        /*
+         * Tao pagination HTML neu chua co
+         */
+
+        if (
+            !document.getElementById(
+                "news-pagination"
+            )
+        ) {
+
+            const pagination =
+                document.createElement("div");
+
+            pagination.id =
+                "news-pagination";
+
+            pagination.className =
+                "news-pagination";
+
+            list.insertAdjacentElement(
+                "afterend",
+                pagination
+            );
+        }
+
+
+        if (
+            !document.getElementById(
+                "news-page-info"
+            )
+        ) {
+
+            const info =
+                document.createElement("div");
+
+            info.id =
+                "news-page-info";
+
+            info.className =
+                "news-page-info";
+
+            const pagination =
+                document.getElementById(
+                    "news-pagination"
+                );
+
+            pagination.insertAdjacentElement(
+                "afterend",
+                info
+            );
+        }
+
+
+        setupNewsFilters();
+
+        /*
+         * Chay sau khi loadNews goc da hoan tat
+         */
+
+        setTimeout(
+            function () {
+                loadNewsPagination("");
+            },
+            800
+        );
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            start
+        );
+
+    } else {
+
+        start();
+    }
+
+})();
+</script>
+
+</body>
+</html>
