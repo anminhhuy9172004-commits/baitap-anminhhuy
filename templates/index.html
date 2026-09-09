@@ -422,6 +422,14 @@ td{
 }
 </style>
 <style>
+
+.language-label{
+    align-self:center;
+    color:#71869b;
+    font-size:13px;
+    margin-right:3px
+}
+
 .language-switcher{
     display:flex;
     justify-content:flex-end;
@@ -449,9 +457,12 @@ td{
 </head>
 
 <body><div class="language-switcher">
+    <span class="language-label">Language:</span>
+
     <button id="lang-vi" class="language-btn active" onclick="setLanguage('vi')">
         🇻🇳 Tiếng Việt
     </button>
+
     <button id="lang-en" class="language-btn" onclick="setLanguage('en')">
         🇬🇧 English
     </button>
